@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Durgamba Seva Trust Donations Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit:ital@0;1&family=Cinzel:wght@400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --saffron: #E8620A;
+    --deep-red: #8B1A1A;
+    --gold: #C9922C;
+    --gold-light: #F5C842;
+    --cream: #FAF3E0;
+    --dark: #1A0F00;
+    --mid: #3D2B00;
+    --text: #2C1A00;
+    --muted: #7A5C30;
+    --surface: #FFF8EC;
+    --border: rgba(201,146,44,0.25);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,98,10,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 90% 80%, rgba(201,146,44,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: relative;
+    text-align: center;
+    padding: 48px 24px 36px;
+    background: linear-gradient(180deg, #1A0800 0%, #2C1200 60%, #3D2000 100%);
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9922C' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 1;
+  }
+
+  .header-om {
+    font-size: 44px;
+    color: var(--gold-light);
+    margin-bottom: 8px;
+    position: relative;
+    filter: drop-shadow(0 0 20px rgba(245,200,66,0.4));
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(245,200,66,0.4)); }
+    50% { filter: drop-shadow(0 0 35px rgba(245,200,66,0.7)); }
+  }
+
+  .header-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(18px, 3.5vw, 36px);
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 0.06em;
+    position: relative;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+
+  .header-subtitle {
+    font-family: 'Tiro Devanagari Sanskrit', serif;
+    font-size: 17px;
+    color: rgba(245,200,66,0.7);
+    margin-top: 6px;
+    position: relative;
+    letter-spacing: 0.04em;
+  }
+
+  .header-line {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 18px auto 0;
+    position: relative;
+  }
+
+  .header-line::before {
+    content: '◆';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--gold);
+    font-size: 10px;
+    background: #2C1200;
+    padding: 0 8px;
+  }
+
+  /* ===== NAV TABS ===== */
+  .nav-tabs {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0 12px;
+    background: #1A0800;
+    border-bottom: 2px solid var(--gold);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    position: relative;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+
+  /* Fade hint for horizontal scroll */
+  .nav-tabs::after {
+    content: '';
+    position: sticky;
+    right: 0;
+    top: 0;
+    width: 32px;
+    min-width: 32px;
+    background: linear-gradient(90deg, transparent, #1A0800);
+    pointer-events: none;
+  }
+
+  .nav-tab {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 13px 18px;
+    color: rgba(245,200,66,0.6);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .nav-tab:hover { color: var(--gold-light); }
+  .nav-tab.active {
+    color: var(--gold-light);
+    border-bottom-color: var(--saffron);
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 20px 64px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== YEAR FILTER ===== */
+  .year-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .year-filter label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .year-btn {
+    padding: 8px 18px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.05em;
+    min-height: 36px;
+  }
+  .year-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .year-btn.active {
+    background: var(--deep-red);
+    border-color: var(--deep-red);
+    color: #fff;
+  }
+
+  /* ===== KPI CARDS ===== */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(139,26,26,0.1);
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--saffron), var(--gold));
+  }
+
+  .kpi-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+
+  .kpi-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'Cinzel', serif;
+    margin-bottom: 5px;
+  }
+
+  .kpi-value {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(20px, 2.5vw, 28px);
+    font-weight: 700;
+    color: var(--deep-red);
+    line-height: 1;
+  }
+
+  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  .kpi-change { font-size: 12px; font-weight: 600; margin-top: 5px; }
+  .kpi-change.up { color: #2E7D32; }
+  .kpi-change.down { color: #C62828; }
+
+  /* ===== CHART GRID ===== */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+  }
+
+  .chart-card.full { grid-column: 1 / -1; }
+
+  .chart-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--mid);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chart-title span { color: var(--saffron); font-size: 15px; }
+
+  .chart-container { position: relative; height: 250px; }
+  .chart-container.tall { height: 300px; }
+
+  /* ===== TABLE ===== */
+  .table-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 160px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .search-box:focus { border-color: var(--gold); }
+  .search-box::placeholder { color: var(--muted); }
+
+  .filter-select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    min-height: 40px;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+  thead {
+    background: linear-gradient(135deg, #1A0800, #2C1200);
+    color: var(--gold-light);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  thead th {
+    padding: 13px 14px;
+    text-align: left;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  thead th:hover { background: rgba(201,146,44,0.2); }
+  thead th.sorted-asc::after { content: ' ↑'; color: var(--gold-light); }
+  thead th.sorted-desc::after { content: ' ↓'; color: var(--gold-light); }
+
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(201,146,44,0.06); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: 11px 14px; vertical-align: middle; }
+
+  .td-name { font-weight: 600; color: var(--text); max-width: 240px; }
+  .td-name small { display: block; color: var(--muted); font-size: 11px; font-family: 'Tiro Devanagari Sanskrit', serif; }
+  .td-amount { font-family: 'Cinzel', serif; font-weight: 700; color: var(--deep-red); }
+  .td-book { font-family: 'Cinzel', serif; font-size: 12px; color: var(--muted); text-align: center; }
+  .td-year {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pagination-info { font-size: 12px; color: var(--muted); font-family: 'Cinzel', serif; }
+
+  .pagination-btns { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+
+  .page-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    min-height: 34px;
+  }
+  .page-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+  .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .page-btn.active-page { background: var(--deep-red); border-color: var(--deep-red); color: #fff; }
+
+  /* ===== COMPARISON VIEW ===== */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .compare-card {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .compare-year { font-family: 'Cinzel', serif; font-size: 34px; font-weight: 700; color: var(--deep-red); }
+  .compare-total { font-family: 'Cinzel', serif; font-size: 20px; color: var(--saffron); margin: 6px 0 4px; }
+  .compare-count { font-size: 13px; color: var(--muted); }
+
+  /* ===== TOP DONORS ===== */
+  .top-donors-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .donor-rank-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: transform 0.15s ease;
+  }
+  .donor-rank-item:hover { transform: translateX(4px); }
+
+  .donor-rank { font-family: 'Cinzel', serif; font-size: 17px; font-weight: 700; color: var(--muted); min-width: 26px; text-align: center; }
+  .donor-rank-item:nth-child(1) .donor-rank { color: #C9922C; font-size: 21px; }
+  .donor-rank-item:nth-child(2) .donor-rank { color: #9E9E9E; }
+  .donor-rank-item:nth-child(3) .donor-rank { color: #A0522D; }
+
+  .donor-rank-info { flex: 1; min-width: 0; }
+  .donor-rank-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .donor-rank-kannada { font-family: 'Tiro Devanagari Sanskrit', serif; font-size: 11px; color: var(--muted); }
+
+  .donor-rank-amount { font-family: 'Cinzel', serif; font-weight: 700; color: var(--deep-red); font-size: 14px; text-align: right; }
+
+  /* ===== SECTION HEADINGS ===== */
+  .section-heading {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin: 28px 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-heading::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: linear-gradient(180deg, var(--saffron), var(--gold));
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ===== RECURRING DONORS TAB ===== */
+  .recurring-kpi {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .recurring-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .recurring-item:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(139,26,26,0.1); }
+
+  .recurring-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--saffron), var(--gold));
+  }
+
+  .recurring-name { font-weight: 600; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+  .recurring-kannada { font-family: 'Tiro Devanagari Sanskrit', serif; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+
+  .recurring-years {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+
+  .year-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .year-pill-amount {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    opacity: 0.9;
+  }
+
+  .loyalty-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .badge-2yr { background: rgba(201,146,44,0.15); color: #7A5C30; border: 1px solid rgba(201,146,44,0.4); }
+  .badge-3yr { background: rgba(232,98,10,0.12); color: var(--saffron); border: 1px solid rgba(232,98,10,0.35); }
+  .badge-4yr { background: rgba(139,26,26,0.12); color: var(--deep-red); border: 1px solid rgba(139,26,26,0.35); }
+
+  .recurring-total {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--deep-red);
+  }
+  .recurring-total-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .recurring-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  /* ===== LOADING ===== */
+  .loading {
+    display: flex; align-items: center; justify-content: center; height: 200px;
+    font-family: 'Cinzel', serif; color: var(--muted); gap: 12px; font-size: 14px;
+  }
+
+  .spinner {
+    width: 24px; height: 24px;
+    border: 3px solid var(--border);
+    border-top-color: var(--saffron);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ===== ANIMATIONS ===== */
+  .fade-in { animation: fadeIn 0.35s ease-out forwards; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .no-data {
+    text-align: center; padding: 40px; color: var(--muted);
+    font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.08em;
+  }
+
+  .amount-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .amount-bar {
+    height: 4px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--saffron), var(--gold));
+    transition: width 0.3s ease;
+  }
+
+  /* ===== MOBILE RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .chart-grid { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    main { padding: 16px 12px 48px; }
+    .chart-container { height: 210px; }
+    .chart-container.tall { height: 260px; }
+    .compare-grid { grid-template-columns: repeat(2, 1fr); }
+    .recurring-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    header { padding: 32px 16px 28px; }
+    .header-om { font-size: 36px; }
+    .header-subtitle { font-size: 15px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .kpi-card { padding: 14px 12px; }
+    .kpi-value { font-size: 20px; }
+    .nav-tab { padding: 11px 13px; font-size: 10px; gap: 3px; }
+    .nav-tab .tab-label { display: none; }
+    .nav-tab .tab-icon { font-size: 15px; }
+    main { padding: 12px 10px 48px; }
+    .chart-container { height: 190px; }
+    .chart-container.tall { height: 230px; }
+    /* Hide less-essential table columns on mobile */
+    .col-book, .col-sl { display: none; }
+    .td-name { max-width: 170px; }
+    table { font-size: 13px; }
+    tbody td { padding: 10px 10px; }
+    thead th { padding: 11px 10px; }
+    .filter-select { font-size: 10px; padding: 8px 10px; }
+    .search-box { font-size: 13px; }
+    .donor-rank-name { font-size: 13px; }
+    .donor-rank-amount { font-size: 13px; }
+    .year-filter { gap: 6px; }
+    .year-btn { padding: 7px 12px; font-size: 11px; }
+    .compare-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .compare-year { font-size: 28px; }
+    .compare-total { font-size: 16px; }
+    .recurring-grid { grid-template-columns: 1fr; }
+    .section-heading { font-size: 11px; }
+  }
+
+  /* Table mobile scroll hint */
+  .table-wrap {
+    position: relative;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-om">🕉️</div>
+  <h1 class="header-title">Durgamba Seva Trust Donations Dashboard</h1>
+  <p class="header-subtitle">ದುರ್ಗಾಂಬಾ ಸೇವಾ ಟ್ರಸ್ಟ್</p>
+  <div class="header-line"></div>
+</header>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" data-tab="overview"><span class="tab-icon">📊</span><span class="tab-label"> Overview</span></button>
+  <button class="nav-tab" data-tab="trends"><span class="tab-icon">📈</span><span class="tab-label"> Trends</span></button>
+  <button class="nav-tab" data-tab="donors"><span class="tab-icon">👥</span><span class="tab-label"> All Donors</span></button>
+  <button class="nav-tab" data-tab="compare"><span class="tab-icon">⚖️</span><span class="tab-label"> Year Compare</span></button>
+  <button class="nav-tab" data-tab="topdonors"><span class="tab-icon">🏆</span><span class="tab-label"> Top Donors</span></button>
+  <button class="nav-tab" data-tab="recurring"><span class="tab-icon">🔁</span><span class="tab-label"> Recurring</span></button>
+</nav>
+
+<main>
+
+  <!-- ===== OVERVIEW TAB ===== -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="year-filter" id="overview-year-filter" style="margin-top:0">
+      <label>Filter Year:</label>
+      <button class="year-btn active" data-year="all">All Years</button>
+    </div>
+
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card fade-in">
+        <span class="kpi-icon">💰</span>
+        <div class="kpi-label">Total Collected</div>
+        <div class="kpi-value" id="kpi-total">—</div>
+        <div class="kpi-sub" id="kpi-total-sub"></div>
+      </div>
+      <div class="kpi-card fade-in">
+        <span class="kpi-icon">🙏</span>
+        <div class="kpi-label">Total Donors</div>
+        <div class="kpi-value" id="kpi-count">—</div>
+        <div class="kpi-sub" id="kpi-count-sub"></div>
+      </div>
+      <div class="kpi-card fade-in">
+        <span class="kpi-icon">📈</span>
+        <div class="kpi-label">Average Donation</div>
+        <div class="kpi-value" id="kpi-avg">—</div>
+        <div class="kpi-sub" id="kpi-avg-sub"></div>
+      </div>
+      <div class="kpi-card fade-in">
+        <span class="kpi-icon">🌟</span>
+        <div class="kpi-label">Highest Donation</div>
+        <div class="kpi-value" id="kpi-max">—</div>
+        <div class="kpi-sub" id="kpi-max-sub"></div>
+      </div>
+      <div class="kpi-card fade-in">
+        <span class="kpi-icon">📚</span>
+        <div class="kpi-label">Receipt Books</div>
+        <div class="kpi-value" id="kpi-books">—</div>
+        <div class="kpi-sub" id="kpi-books-sub"></div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span>◉</span> Donations by Amount Range</div>
+        <div class="chart-container"><canvas id="chart-distribution"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span>◉</span> Collection by Receipt Book</div>
+        <div class="chart-container"><canvas id="chart-bybook"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <div class="chart-title"><span>◉</span> Donation Amount Distribution (All Donors)</div>
+        <div class="chart-container tall"><canvas id="chart-scatter"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TRENDS TAB ===== -->
+  <div class="tab-content" id="tab-trends">
+    <h2 class="section-heading">Year-over-Year Trends</h2>
+    <div class="chart-grid">
+      <div class="chart-card full">
+        <div class="chart-title"><span>◉</span> Total Collections by Year</div>
+        <div class="chart-container"><canvas id="chart-yoy"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span>◉</span> Donor Count by Year</div>
+        <div class="chart-container"><canvas id="chart-count-compare"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span>◉</span> Average Donation by Year</div>
+        <div class="chart-container"><canvas id="chart-avg-compare"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <div class="chart-title"><span>◉</span> Amount Bracket Distribution by Year</div>
+        <div class="chart-container"><canvas id="chart-bracket-compare"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DONORS TAB ===== -->
+  <div class="tab-content" id="tab-donors">
+    <div class="table-controls">
+      <input type="text" class="search-box" id="donor-search" placeholder="Search by name…" autocomplete="off">
+      <select class="filter-select" id="year-filter-table">
+        <option value="all">All Years</option>
+      </select>
+      <select class="filter-select" id="amount-filter-table">
+        <option value="all">All Amounts</option>
+        <option value="lt500">Below ₹500</option>
+        <option value="500-1000">₹500 – ₹1,000</option>
+        <option value="1001-5000">₹1,001 – ₹5,000</option>
+        <option value="gt5000">Above ₹5,000</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table id="donors-table">
+        <thead>
+          <tr>
+            <th data-col="rank">#</th>
+            <th data-col="name">Name</th>
+            <th data-col="amount">Amount</th>
+            <th data-col="book" class="col-book">Book</th>
+            <th data-col="sl" class="col-sl">Sl. No.</th>
+            <th data-col="year">Year</th>
+          </tr>
+        </thead>
+        <tbody id="donors-tbody"></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <div class="pagination-info" id="table-info">—</div>
+      <div class="pagination-btns" id="pagination-btns"></div>
+    </div>
+  </div>
+
+  <!-- ===== COMPARE TAB ===== -->
+  <div class="tab-content" id="tab-compare">
+    <div class="compare-grid" id="compare-year-cards"></div>
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title"><span>◉</span> Growth Summary</div>
+      <div id="growth-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;padding:8px 0;overflow-x:auto"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><span>◉</span> Amount Distribution Comparison</div>
+      <div class="chart-container tall"><canvas id="chart-violin"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ===== TOP DONORS TAB ===== -->
+  <div class="tab-content" id="tab-topdonors">
+    <div class="year-filter" id="topdonors-year-filter" style="margin-top:0">
+      <label>Filter Year:</label>
+      <button class="year-btn" data-year-top="all">All Years</button>
+    </div>
+
+    <h2 class="section-heading">Top 20 Donors</h2>
+    <div class="top-donors-list" id="top-donors-list"></div>
+
+    <h2 class="section-heading" style="margin-top:36px">Generous Patrons (₹5,000+)</h2>
+    <div class="top-donors-list" id="premium-donors-list"></div>
+  </div>
+
+  <!-- ===== RECURRING DONORS TAB ===== -->
+  <div class="tab-content" id="tab-recurring">
+    <div class="kpi-grid recurring-kpi" id="recurring-kpi-grid"></div>
+    <h2 class="section-heading">Donors Across Multiple Years</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;font-family:'Cinzel',serif;letter-spacing:0.04em">
+      Matched by exact name. Showing <span id="recurring-count-label">—</span> loyal donors.
+    </p>
+    <div class="recurring-grid" id="recurring-list"></div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  ದುರ್ಗಾಂಬಾ ಸೇವಾ ಟ್ರಸ್ಟ್ &nbsp;|&nbsp; Developed by Vikas Kottari &nbsp;|&nbsp; 2026
+</footer>
+
+<script>
+// ============================================================
+// EMBEDDED DATA FALLBACK
+// ============================================================
+const ALL_DATA = {"donors2024":[],"donors2025":[]};
+
+const fmt = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+
+const CHART_COLORS = {
+  saffron: '#E8620A', gold: '#C9922C', deep: '#8B1A1A',
+  light: '#F5C842', muted: '#7A5C30', cream: '#FAF3E0',
+};
+
+const YEAR_PALETTE = [
+  'rgba(139,26,26,0.85)',
+  'rgba(232,98,10,0.85)',
+  'rgba(201,146,44,0.85)',
+  'rgba(61,130,190,0.85)',
+  'rgba(80,160,80,0.85)',
+  'rgba(120,60,160,0.85)',
+  'rgba(200,80,120,0.85)',
+  'rgba(40,140,130,0.85)',
+];
+
+Chart.defaults.font.family = "'Source Serif 4', serif";
+Chart.defaults.color = '#7A5C30';
+
+let charts = {};
+let allDonors = [];
+let allYears  = [];
+
+function yearColor(year) {
+  const idx = allYears.indexOf(year);
+  return YEAR_PALETTE[idx >= 0 ? idx % YEAR_PALETTE.length : 0];
+}
+
+// ============================================================
+// DEFAULT YEAR LOGIC
+// Returns current calendar year if data exists, else last available year
+// ============================================================
+function getDefaultYear() {
+  const currentYear = new Date().getFullYear();
+  if (allYears.includes(currentYear)) return currentYear;
+  if (allYears.length > 0) return allYears[allYears.length - 1];
+  return 'all';
+}
+
+// ============================================================
+// DATA INIT
+// ============================================================
+function initData(data) {
+  allDonors = [];
+  allYears  = [];
+  Object.keys(data).forEach(key => {
+    const m = key.match(/^donors(\d{4})$/);
+    if (!m) return;
+    const year = parseInt(m[1]);
+    allYears.push(year);
+    data[key].forEach(d => allDonors.push({ ...d, year }));
+  });
+  allYears.sort((a, b) => a - b);
+}
+
+function getFiltered(year) {
+  if (year === 'all') return allDonors;
+  return allDonors.filter(d => d.year === parseInt(year));
+}
+
+// ============================================================
+// DYNAMIC YEAR UI
+// ============================================================
+function buildYearUI() {
+  // Year-color CSS badges
+  let styleEl = document.getElementById('year-badge-styles');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'year-badge-styles';
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = allYears.map((y, i) => {
+    const bg = YEAR_PALETTE[i % YEAR_PALETTE.length];
+    return `.td-year.y${y}{background:${bg};color:#fff;}`;
+  }).join('\n');
+
+  const defaultYear = getDefaultYear();
+
+  // --- Overview year-filter buttons (keeps 'All Years' as default) ---
+  const ovFilter = document.getElementById('overview-year-filter');
+  ovFilter.querySelectorAll('.year-btn:not([data-year="all"])').forEach(b => b.remove());
+  allYears.forEach(y => {
+    const btn = document.createElement('button');
+    btn.className = 'year-btn';
+    btn.dataset.year = y;
+    btn.textContent = y;
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#overview-year-filter [data-year]').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      renderOverviewCharts(this.dataset.year);
+    });
+    ovFilter.appendChild(btn);
+  });
+
+  // --- Top Donors year-filter buttons (default = current/last year) ---
+  const tdFilter = document.getElementById('topdonors-year-filter');
+  tdFilter.querySelectorAll('.year-btn').forEach(b => b.remove());
+
+  // Add "All Years" button (not active by default)
+  const allBtn = document.createElement('button');
+  allBtn.className = 'year-btn';
+  allBtn.dataset.yearTop = 'all';
+  allBtn.textContent = 'All Years';
+  allBtn.addEventListener('click', function() {
+    setTopDonorYear('all');
+    renderTopDonors('all');
+  });
+  tdFilter.appendChild(allBtn);
+
+  allYears.forEach(y => {
+    const btn = document.createElement('button');
+    btn.className = 'year-btn';
+    btn.dataset.yearTop = y;
+    btn.textContent = y;
+    btn.addEventListener('click', function() {
+      setTopDonorYear(String(y));
+      renderTopDonors(String(y));
+    });
+    tdFilter.appendChild(btn);
+  });
+
+  // Set active year for top donors
+  setTopDonorYear(String(defaultYear));
+
+  // --- Table year dropdown (default = current/last year) ---
+  const sel = document.getElementById('year-filter-table');
+  sel.querySelectorAll('option:not([value="all"])').forEach(o => o.remove());
+  allYears.forEach(y => {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    sel.appendChild(opt);
+  });
+  sel.value = String(defaultYear);
+  tableYear = String(defaultYear);
+}
+
+function setTopDonorYear(year) {
+  document.querySelectorAll('#topdonors-year-filter .year-btn').forEach(b => {
+    const bYear = b.dataset.yearTop !== undefined ? b.dataset.yearTop : '';
+    b.classList.toggle('active', String(bYear) === String(year));
+  });
+}
+
+// ============================================================
+// BRACKETS
+// ============================================================
+const BRACKETS = [
+  { label: '< ₹250',    min: 0,    max: 249 },
+  { label: '₹250–499',  min: 250,  max: 499 },
+  { label: '₹500–999',  min: 500,  max: 999 },
+  { label: '₹1k–2k',   min: 1000, max: 1999 },
+  { label: '₹2k–5k',   min: 2000, max: 4999 },
+  { label: '₹5k+',     min: 5000, max: Infinity },
+];
+
+function getBracketCounts(donors) {
+  return BRACKETS.map(b => donors.filter(d => d.amount >= b.min && d.amount <= b.max).length);
+}
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+// ============================================================
+// OVERVIEW CHARTS
+// ============================================================
+function renderOverviewCharts(year) {
+  const donors = getFiltered(year);
+  const total = donors.reduce((s, d) => s + d.amount, 0);
+  const avg = total / (donors.length || 1);
+  const maxD = donors.reduce((m, d) => d.amount > m.amount ? d : m, {amount: 0, name: ''});
+  const books = new Set(donors.map(d => `${d.year}-${d.book}`)).size;
+
+  document.getElementById('kpi-total').textContent = fmt(total);
+  document.getElementById('kpi-count').textContent = donors.length.toLocaleString();
+  document.getElementById('kpi-avg').textContent = fmt(avg);
+  document.getElementById('kpi-max').textContent = fmt(maxD.amount);
+  document.getElementById('kpi-max-sub').textContent = maxD.name ? maxD.name.slice(0, 40) : '';
+  document.getElementById('kpi-books').textContent = books;
+  document.getElementById('kpi-books-sub').textContent = `${new Set(donors.map(d => d.book)).size} unique books`;
+
+  if (year === 'all') {
+    document.getElementById('kpi-total-sub').textContent = allYears.join(' + ') + ' combined';
+    document.getElementById('kpi-count-sub').textContent = allYears.map(y =>
+      `${getFiltered(String(y)).length} in ${y}`).join(' · ');
+  } else {
+    document.getElementById('kpi-total-sub').textContent = `Year ${year}`;
+    document.getElementById('kpi-count-sub').textContent = `${donors.length} donors in ${year}`;
+  }
+  document.getElementById('kpi-avg-sub').textContent = 'Per donation';
+
+  destroyChart('distribution');
+  const bCounts = getBracketCounts(donors);
+  charts.distribution = new Chart(document.getElementById('chart-distribution'), {
+    type: 'doughnut',
+    data: {
+      labels: BRACKETS.map(b => b.label),
+      datasets: [{
+        data: bCounts,
+        backgroundColor: [
+          'rgba(245,200,66,0.85)', 'rgba(232,98,10,0.8)', 'rgba(201,146,44,0.85)',
+          'rgba(139,26,26,0.75)', 'rgba(61,43,0,0.7)', 'rgba(122,92,48,0.6)',
+        ],
+        borderColor: '#FAF3E0', borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '60%',
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 12, padding: 10, font: { family: 'Cinzel, serif', size: 10 } } },
+        tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw} donors` } }
+      }
+    }
+  });
+
+  destroyChart('bybook');
+  const byBook = {};
+  donors.forEach(d => {
+    const key = year === 'all' ? `${d.year}/Bk ${d.book}` : `Book ${d.book}`;
+    byBook[key] = (byBook[key] || 0) + d.amount;
+  });
+  const bookLabels = Object.keys(byBook).sort();
+  charts.bybook = new Chart(document.getElementById('chart-bybook'), {
+    type: 'bar',
+    data: {
+      labels: bookLabels,
+      datasets: [{
+        label: 'Collection (₹)',
+        data: bookLabels.map(k => byBook[k]),
+        backgroundColor: bookLabels.map((_, i) => i % 2 === 0 ? 'rgba(232,98,10,0.75)' : 'rgba(201,146,44,0.75)'),
+        borderRadius: 4, borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${fmt(c.raw)}` } } },
+      scales: {
+        x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+        y: { ticks: { callback: (v) => '₹' + (v >= 1000 ? (v/1000)+'k' : v) }, grid: { color: 'rgba(201,146,44,0.1)' } }
+      }
+    }
+  });
+
+  destroyChart('scatter');
+  charts.scatter = new Chart(document.getElementById('chart-scatter'), {
+    type: 'scatter',
+    data: {
+      datasets: allYears.map(y => ({
+        label: String(y),
+        data: donors.filter(d => d.year === y).map((d, i) => ({ x: i, y: d.amount, name: d.name })),
+        backgroundColor: yearColor(y), pointRadius: 4, pointHoverRadius: 7,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { family: 'Cinzel, serif', size: 11 } } },
+        tooltip: { callbacks: { label: (ctx) => ` ${ctx.raw.name || 'Donor'}: ${fmt(ctx.raw.y)}` } }
+      },
+      scales: {
+        x: { display: false },
+        y: { ticks: { callback: (v) => fmt(v) }, grid: { color: 'rgba(201,146,44,0.1)' } }
+      }
+    }
+  });
+}
+
+// ============================================================
+// TRENDS CHARTS
+// ============================================================
+function renderTrendsCharts() {
+  const yearData = allYears.map(y => ({ y, donors: getFiltered(String(y)) }));
+  const labels   = allYears.map(String);
+  const totals   = yearData.map(r => r.donors.reduce((s, d) => s + d.amount, 0));
+  const counts   = yearData.map(r => r.donors.length);
+  const avgs     = yearData.map((r, i) => totals[i] / (counts[i] || 1));
+  const colors   = allYears.map(y => yearColor(y));
+
+  destroyChart('yoy');
+  charts.yoy = new Chart(document.getElementById('chart-yoy'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Total Collection (₹)', data: totals, backgroundColor: colors, borderRadius: 8, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${fmt(c.raw)}` } } },
+      scales: { y: { ticks: { callback: v => '₹' + (v/1000).toFixed(0)+'k' }, grid: { color: 'rgba(201,146,44,0.1)' } }, x: { grid: { display: false } } }
+    }
+  });
+
+  destroyChart('count-compare');
+  charts['count-compare'] = new Chart(document.getElementById('chart-count-compare'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Donors', data: counts, backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(201,146,44,0.1)' } }, x: { grid: { display: false } } } }
+  });
+
+  destroyChart('avg-compare');
+  charts['avg-compare'] = new Chart(document.getElementById('chart-avg-compare'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Average (₹)', data: avgs, backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${fmt(c.raw)}` } } },
+      scales: { y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(201,146,44,0.1)' } }, x: { grid: { display: false } } }
+    }
+  });
+
+  destroyChart('bracket-compare');
+  charts['bracket-compare'] = new Chart(document.getElementById('chart-bracket-compare'), {
+    type: 'bar',
+    data: {
+      labels: BRACKETS.map(b => b.label),
+      datasets: yearData.map(r => ({
+        label: String(r.y), data: getBracketCounts(r.donors),
+        backgroundColor: yearColor(r.y), borderRadius: 4,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { family: 'Cinzel, serif', size: 11 } } } },
+      scales: { y: { grid: { color: 'rgba(201,146,44,0.1)' } }, x: { grid: { display: false } } }
+    }
+  });
+}
+
+// ============================================================
+// COMPARE TAB
+// ============================================================
+function renderCompareTab() {
+  const yearData = allYears.map(y => {
+    const donors = getFiltered(String(y));
+    const total  = donors.reduce((s, d) => s + d.amount, 0);
+    return { y, donors, total, avg: total / (donors.length || 1), count: donors.length };
+  });
+
+  document.getElementById('compare-year-cards').innerHTML = yearData.map(r => `
+    <div class="compare-card fade-in">
+      <div class="compare-year">${r.y}</div>
+      <div class="compare-total">${fmt(r.total)}</div>
+      <div class="compare-count">${r.count} donors</div>
+    </div>
+  `).join('');
+
+  const metrics = [];
+  for (let i = 1; i < yearData.length; i++) {
+    const prev = yearData[i - 1], curr = yearData[i];
+    const tGrowth = ((curr.total - prev.total) / (prev.total || 1) * 100).toFixed(1);
+    const cGrowth = ((curr.count - prev.count) / (prev.count || 1) * 100).toFixed(1);
+    const aGrowth = ((curr.avg   - prev.avg)   / (prev.avg   || 1) * 100).toFixed(1);
+    const sign = v => parseFloat(v) >= 0 ? `+${v}` : v;
+    const col  = v => parseFloat(v) >= 0 ? '#2E7D32' : '#C62828';
+    metrics.push(
+      { label: `${prev.y}→${curr.y} Total`,  value: sign(tGrowth)+'%', sub: `${fmt(curr.total - prev.total)} diff`, color: col(tGrowth) },
+      { label: `${prev.y}→${curr.y} Donors`, value: sign(cGrowth)+'%', sub: `${curr.count - prev.count} donors diff`, color: col(cGrowth) },
+      { label: `${prev.y}→${curr.y} Avg`,    value: sign(aGrowth)+'%', sub: `${fmt(prev.avg)} → ${fmt(curr.avg)}`, color: col(aGrowth) },
+      { label: `${curr.y} Books`, value: String(new Set(curr.donors.map(d=>d.book)).size),
+        sub: `vs ${new Set(prev.donors.map(d=>d.book)).size} in ${prev.y}`, color: '#6A1B9A' },
+    );
+  }
+  document.getElementById('growth-summary').innerHTML = metrics.map(m => `
+    <div style="text-align:center;padding:14px 8px;border-right:1px solid rgba(201,146,44,0.2)">
+      <div style="font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:${m.color}">${m.value}</div>
+      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#7A5C30;margin:4px 0 2px">${m.label}</div>
+      <div style="font-size:11px;color:#7A5C30">${m.sub}</div>
+    </div>
+  `).join('');
+
+  destroyChart('violin');
+  const percs  = [10, 25, 50, 75, 90, 99];
+  const pct    = (arr, p) => arr[Math.floor(arr.length * p / 100)] || 0;
+  charts.violin = new Chart(document.getElementById('chart-violin'), {
+    type: 'line',
+    data: {
+      labels: ['P10', 'P25', 'Median', 'P75', 'P90', 'Max'],
+      datasets: yearData.map(r => {
+        const sorted = r.donors.map(d => d.amount).sort((a, b) => a - b);
+        return {
+          label: String(r.y),
+          data: percs.map(p => pct(sorted, p)),
+          borderColor: yearColor(r.y),
+          backgroundColor: yearColor(r.y).replace('0.85)', '0.12)'),
+          fill: true, tension: 0.4, pointRadius: 6,
+          pointBackgroundColor: yearColor(r.y),
+        };
+      })
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { family: 'Cinzel, serif', size: 11 } } },
+        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmt(c.raw)}` } }
+      },
+      scales: {
+        y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(201,146,44,0.1)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ============================================================
+// TABLE
+// ============================================================
+let tableData = [];
+let tablePage = 1;
+let tablePerPage = 20;
+let tableSortCol = 'amount';
+let tableSortDir = 'desc';
+let tableYear = 'all';
+let tableSearch = '';
+let tableAmountFilter = 'all';
+
+function applyTableFilters() {
+  let data = allDonors;
+  if (tableYear !== 'all') data = data.filter(d => d.year === parseInt(tableYear));
+  if (tableSearch) {
+    const q = tableSearch.toLowerCase();
+    data = data.filter(d => d.name.toLowerCase().includes(q) || (d.kannada && d.kannada.includes(q)));
+  }
+  if (tableAmountFilter !== 'all') {
+    data = data.filter(d => {
+      const af = tableAmountFilter;
+      if (af === 'lt500')     return d.amount < 500;
+      if (af === '500-1000')  return d.amount >= 500 && d.amount <= 1000;
+      if (af === '1001-5000') return d.amount > 1000 && d.amount <= 5000;
+      if (af === 'gt5000')    return d.amount > 5000;
+      return true;
+    });
+  }
+  data = [...data].sort((a, b) => {
+    let av = a[tableSortCol], bv = b[tableSortCol];
+    if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    return tableSortDir === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+  });
+  tableData = data;
+  tablePage = 1;
+  renderTable();
+}
+
+function renderTable() {
+  const start = (tablePage - 1) * tablePerPage;
+  const page  = tableData.slice(start, start + tablePerPage);
+  const maxAmount = Math.max(...tableData.map(d => d.amount), 1);
+
+  const tbody = document.getElementById('donors-tbody');
+  if (!page.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="no-data">No donors found</div></td></tr>';
+  } else {
+    tbody.innerHTML = page.map((d, i) => `
+      <tr>
+        <td class="td-book" style="color:#999;font-size:12px">${start + i + 1}</td>
+        <td class="td-name">
+          ${escHtml(d.name)}
+          ${d.kannada ? `<small>${escHtml(d.kannada)}</small>` : ''}
+        </td>
+        <td class="td-amount">
+          <div class="amount-bar-wrap">
+            ${fmt(d.amount)}
+            <div class="amount-bar" style="width:${Math.round((d.amount/maxAmount)*60)}px"></div>
+          </div>
+        </td>
+        <td class="td-book col-book">${escHtml(d.book)}</td>
+        <td class="td-book col-sl">${escHtml(d.sl)}</td>
+        <td><span class="td-year y${d.year}">${d.year}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('table-info').textContent =
+    `Showing ${start+1}–${Math.min(start+tablePerPage, tableData.length)} of ${tableData.length} donors`;
+
+  const totalPages = Math.ceil(tableData.length / tablePerPage);
+  const pb = document.getElementById('pagination-btns');
+  let btns = `<button class="page-btn" ${tablePage===1?'disabled':''} onclick="gotoPage(${tablePage-1})">←</button>`;
+  const range = [];
+  for (let p = Math.max(1,tablePage-2); p <= Math.min(totalPages,tablePage+2); p++) range.push(p);
+  if (range[0] > 1) { btns += `<button class="page-btn" onclick="gotoPage(1)">1</button>`; if(range[0]>2) btns += `<span style="padding:0 4px;color:#999">…</span>`; }
+  range.forEach(p => { btns += `<button class="page-btn ${p===tablePage?'active-page':''}" onclick="gotoPage(${p})">${p}</button>`; });
+  if (range[range.length-1] < totalPages) {
+    if(range[range.length-1]<totalPages-1) btns += `<span style="padding:0 4px;color:#999">…</span>`;
+    btns += `<button class="page-btn" onclick="gotoPage(${totalPages})">${totalPages}</button>`;
+  }
+  btns += `<button class="page-btn" ${tablePage===totalPages||totalPages===0?'disabled':''} onclick="gotoPage(${tablePage+1})">→</button>`;
+  pb.innerHTML = btns;
+
+  document.querySelectorAll('#donors-table thead th').forEach(th => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+    if (th.dataset.col === tableSortCol) th.classList.add(tableSortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+  });
+}
+
+function gotoPage(p) { tablePage = p; renderTable(); }
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ============================================================
+// TOP DONORS
+// ============================================================
+function renderTopDonors(year) {
+  const donors  = getFiltered(year);
+  const sorted  = [...donors].sort((a,b) => b.amount - a.amount);
+  const top20   = sorted.slice(0, 20);
+  const premium = sorted.filter(d => d.amount >= 5000);
+
+  const makeItem = (d, rank) => `
+    <div class="donor-rank-item fade-in">
+      <div class="donor-rank">${rank}</div>
+      <div class="donor-rank-info">
+        <div class="donor-rank-name">${escHtml(d.name)}</div>
+        ${d.kannada ? `<div class="donor-rank-kannada">${escHtml(d.kannada)}</div>` : ''}
+      </div>
+      <div>
+        <div class="donor-rank-amount">${fmt(d.amount)}</div>
+        <div style="font-size:11px;color:#999;text-align:right;margin-top:2px">${d.year} · Book ${d.book}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('top-donors-list').innerHTML = top20.length
+    ? top20.map((d,i) => makeItem(d,i+1)).join('')
+    : '<div class="no-data">No donor data for this year</div>';
+  document.getElementById('premium-donors-list').innerHTML = premium.length
+    ? premium.map((d,i) => makeItem(d,i+1)).join('')
+    : '<div class="no-data">No donors above ₹5,000 for this filter</div>';
+}
+
+// ============================================================
+// RECURRING DONORS
+// ============================================================
+function normalizeName(name) {
+  return (name || '').toLowerCase().replace(/[^a-z0-9\s\u0C00-\u0C7F]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function buildRecurringMap() {
+  const map = {};
+  allDonors.forEach(d => {
+    const key = normalizeName(d.name);
+    if (!key) return;
+    if (!map[key]) map[key] = { name: d.name, kannada: d.kannada || '', entries: [] };
+    map[key].entries.push({ year: d.year, amount: d.amount, book: d.book });
+  });
+
+  return Object.values(map)
+    .filter(d => {
+      const uniqueYears = new Set(d.entries.map(e => e.year));
+      return uniqueYears.size >= 2;
+    })
+    .map(d => {
+      const uniqueYears = [...new Set(d.entries.map(e => e.year))].sort();
+      const total = d.entries.reduce((s, e) => s + e.amount, 0);
+      const byYear = {};
+      d.entries.forEach(e => {
+        if (!byYear[e.year]) byYear[e.year] = 0;
+        byYear[e.year] += e.amount;
+      });
+      return { name: d.name, kannada: d.kannada, years: uniqueYears, total, byYear };
+    })
+    .sort((a, b) => b.total - a.total);
+}
+
+function badgeForYears(count) {
+  if (count >= 4) return `<span class="loyalty-badge badge-4yr">⭐ ${count}-Year Donor</span>`;
+  if (count === 3) return `<span class="loyalty-badge badge-3yr">🔥 3-Year Donor</span>`;
+  return `<span class="loyalty-badge badge-2yr">✨ 2-Year Donor</span>`;
+}
+
+function renderRecurringTab() {
+  const recurring = buildRecurringMap();
+  const totalContrib = recurring.reduce((s, d) => s + d.total, 0);
+  const grandTotal = allDonors.reduce((s, d) => s + d.amount, 0);
+  const pct = grandTotal > 0 ? ((totalContrib / grandTotal) * 100).toFixed(1) : 0;
+
+  // KPI cards
+  document.getElementById('recurring-kpi-grid').innerHTML = `
+    <div class="kpi-card fade-in">
+      <span class="kpi-icon">🔁</span>
+      <div class="kpi-label">Recurring Donors</div>
+      <div class="kpi-value">${recurring.length}</div>
+      <div class="kpi-sub">Gave in 2+ years</div>
+    </div>
+    <div class="kpi-card fade-in">
+      <span class="kpi-icon">💎</span>
+      <div class="kpi-label">Their Total</div>
+      <div class="kpi-value">${fmt(totalContrib)}</div>
+      <div class="kpi-sub">${pct}% of all collections</div>
+    </div>
+    <div class="kpi-card fade-in">
+      <span class="kpi-icon">📅</span>
+      <div class="kpi-label">Avg Per Recurring</div>
+      <div class="kpi-value">${recurring.length ? fmt(totalContrib / recurring.length) : '—'}</div>
+      <div class="kpi-sub">Lifetime average</div>
+    </div>
+    <div class="kpi-card fade-in">
+      <span class="kpi-icon">🏅</span>
+      <div class="kpi-label">3+ Year Loyalists</div>
+      <div class="kpi-value">${recurring.filter(d => d.years.length >= 3).length}</div>
+      <div class="kpi-sub">Donated 3 or more years</div>
+    </div>
+  `;
+
+  document.getElementById('recurring-count-label').textContent = recurring.length;
+
+  if (!recurring.length) {
+    document.getElementById('recurring-list').innerHTML = '<div class="no-data">No recurring donors found across years</div>';
+    return;
+  }
+
+  document.getElementById('recurring-list').innerHTML = recurring.map((d, idx) => {
+    const yearPills = d.years.map(y => {
+      const bg = yearColor(y);
+      return `<span class="year-pill" style="background:${bg}">${y} <span class="year-pill-amount">${fmt(d.byYear[y])}</span></span>`;
+    }).join('');
+
+    return `
+      <div class="recurring-item fade-in" style="animation-delay:${idx * 0.04}s">
+        ${badgeForYears(d.years.length)}
+        <div class="recurring-name">${escHtml(d.name)}</div>
+        ${d.kannada ? `<div class="recurring-kannada">${escHtml(d.kannada)}</div>` : ''}
+        <div class="recurring-years">${yearPills}</div>
+        <div class="recurring-total">${fmt(d.total)}</div>
+        <div class="recurring-total-label">Total across ${d.years.length} years</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+let tabsInitialized = {};
+
+function switchTab(tabId) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tabId));
+
+  if (!tabsInitialized[tabId]) {
+    tabsInitialized[tabId] = true;
+    const def = getDefaultYear();
+    if (tabId === 'trends')   renderTrendsCharts();
+    if (tabId === 'compare')  renderCompareTab();
+    if (tabId === 'donors') {
+      tableYear = String(def);
+      document.getElementById('year-filter-table').value = String(def);
+      applyTableFilters();
+    }
+    if (tabId === 'topdonors') {
+      setTopDonorYear(String(def));
+      renderTopDonors(String(def));
+    }
+    if (tabId === 'recurring') renderRecurringTab();
+  }
+}
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+document.querySelector('[data-year="all"]').addEventListener('click', function() {
+  document.querySelectorAll('#overview-year-filter [data-year]').forEach(b => b.classList.remove('active'));
+  this.classList.add('active');
+  renderOverviewCharts('all');
+});
+
+document.getElementById('donor-search').addEventListener('input', function() {
+  tableSearch = this.value.trim();
+  applyTableFilters();
+});
+
+document.getElementById('year-filter-table').addEventListener('change', function() {
+  tableYear = this.value;
+  applyTableFilters();
+});
+
+document.getElementById('amount-filter-table').addEventListener('change', function() {
+  tableAmountFilter = this.value;
+  applyTableFilters();
+});
+
+document.querySelectorAll('#donors-table thead th[data-col]').forEach(th => {
+  th.addEventListener('click', function() {
+    if (tableSortCol === this.dataset.col) {
+      tableSortDir = tableSortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      tableSortCol = this.dataset.col;
+      tableSortDir = 'desc';
+    }
+    renderTable();
+  });
+});
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  try {
+    let data;
+    try {
+      const resp = await fetch('data.json');
+      data = await resp.json();
+    } catch(e) {
+      data = ALL_DATA;
+    }
+    initData(data);
+    buildYearUI();
+    renderOverviewCharts('all');
+    tabsInitialized['overview'] = true;
+  } catch(err) {
+    console.error('Failed to load data:', err);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
