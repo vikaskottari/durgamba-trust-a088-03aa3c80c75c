@@ -10987,6 +10987,36 @@
    "amount": 5000,
    "info": "",
    "year": 2026
+ },
+   {
+   "#": 526,
+   "book": 12,
+   "sl": 478,
+   "name": "Seetharama poojary, ಸಿಂತನಿಕಟ್ಟೆ",
+   "kannada": "ಸೀತಾರಾಮ ಪೂಜಾರಿ, ಸಿಂತನಿಕಟ್ಟೆ",
+   "amount": 500,
+   "info": "",
+   "year": 2026
+ },
+   {
+   "#": 527,
+   "book": 12,
+   "sl": 479,
+   "name": "chandrahas shetty, ಹಂಡೀರು",
+   "kannada": "ಚಂದ್ರಹಾಸ ಶೆಟ್ಟಿ, ಹಂಡೀರು",
+   "amount": 500,
+   "info": "",
+   "year": 2026
+ },
+   {
+   "#": 528,
+   "book": 12,
+   "sl": 480,
+   "name": "Dr. vijaya prasad, Navoor",
+   "kannada": "ಡಾ. ವಿಜಯ ಪ್ರಸಾದ್, ನಾವೂರುು",
+   "amount": 1000,
+   "info": "",
+   "year": 2026
  }
 ]
 }
